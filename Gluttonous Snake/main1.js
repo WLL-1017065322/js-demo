@@ -1,3 +1,36 @@
+// 画布
+
+(function() {
+  function CanvasBoard() {
+    this.x = 20; //间距
+
+    this.y = 20; //
+
+    this.drawCanvas = function() {
+      context.beginPath();
+
+      context.strokeStyle = "#ddd";
+
+      context.lineWidth = 1;
+
+      for (var i = 0; i < board.width / this.x; i++) {
+        context.moveTo(i * this.x + 0.5, 0);
+
+        context.lineTo(i * this.x + 0.5, board.height);
+      }
+
+      for (var i = 0; i < board.height / this.y; i++) {
+        context.moveTo(0, i * this.y + 0.5);
+
+        context.lineTo(board.width, i * this.y + 0.5);
+      }
+
+      context.stroke();
+    };
+  }
+  window.CanvasBoard = CanvasBoard;
+})();
+
 //自调用食物的函数
 (function() {
   var elements = []; //用来存储食物
@@ -116,6 +149,11 @@
 
     //判断 小蛇头的坐标和食物一致
     if (headX == food.x && headY == food.y) {
+      // 得分
+      scoreNum++;
+      console.log(scoreNum);
+      score.innerHTML = scoreNum;
+
       //获取蛇尾
       var last = this.body[this.body.length - 1];
       this.body.push({
@@ -181,15 +219,18 @@
 
         var headX = this.snake.body[0].x;
         var headY = this.snake.body[0].y;
+        console.log(maxX,maxY,headX,headY,this.snake.width)
+
+        // bug ：右 下：多一格 if (headX < 0 || headX > maxX - 1)
 
         //横坐标
-        if (headX < 0 || headX >= maxX) {
+        if (headX < 0 || headX > maxX - 1) {
           //撞墙了,停止定时器
           clearInterval(timeId);
           alert("游戏结束");
         }
         //纵坐标
-        if (headY < 0 || headY >= maxY) {
+        if (headY < 0 || headY >= maxY - 1) {
           //撞墙了,停止定时器
           clearInterval(timeId);
           alert("游戏结束");
@@ -199,14 +240,13 @@
     ); //change this 指向
     return timeId;
   };
-
+  //按键
   Game.prototype.bindKey = function() {
     document.addEventListener(
       "keydown",
       function(e) {
         switch (e.keyCode) {
           case 37:
-
             //解决蛇 可以直接回头的bug  19.5.6========================
             if (this.snake.direction !== "right") {
               this.snake.direction = "left";
